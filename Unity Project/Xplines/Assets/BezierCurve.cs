@@ -4,45 +4,8 @@ using UnityEngine;
 
 /*
     Bézier functionality: 
-    - Explicit formula
-    - Explicit derivative formula
-    - Explicit double derivative formula
-    - deCasteljau algorithm
-    - Curvature
-    - Arc length
-    - Closest point on curve to world point
-    - Bounding box
-    - Intersection testing: 
-    - - Curve-curve intersection
-    - - Curve-line intersection
-    - - Curve-circle intersection
-    - Functions: 
-    - - Curve fitting (points)
-    - - Curve fitting (points with radius)
-    - - Curve fitting (functions)
-    - - Function from curve
-    - Project onto shape (e.g. terrain)
-    - Inflection points
-    - Extrema
-    - Events: 
-    - - Event point
-    - - Event interval
-    - Physics: 
-    - - Gravity on points
-    - - - Tangents correctly adjusting
-    - - - Bounding and stretching
-    - - Joints: 
-    - - - Hinge joint
-    - - - Bend joint (think about a ruler being bent)
 
     Editing: 
-    - Add control point (not tangent point)
-    - Add and drag to add control point + tangent
-    - Click to add control point and auto tangent
-    - Drag control point
-    - Add to terrain below, or else onto the xz-plane
-    - Remove point
-    - Split segment
     - Close curve
     - Bézier tool active overlay (to show you're editing)
     - Import SVG
@@ -68,6 +31,8 @@ using UnityEngine;
     - Show bitangents
     - Show length from selected
     - Computational complexity
+    - Scrub through t values in inspector (analyzes this point)
+    - - E.g. draws lines from B(t) to B'(t) and B''(t)
 */
 
 [System.Serializable]
