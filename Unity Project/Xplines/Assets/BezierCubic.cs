@@ -37,16 +37,17 @@ public class BezierCubic : MonoBehaviour
     {
         ResetToTemplate(center);
     }
+    #endregion
+
+    #region Utilities
     public Vector3 this[int i]
     {
         get { return ControlPoints[i]; }
     }
-    #endregion
-
-    #region Utilities
     public void ResetToEmpty()
     {
         ControlPoints.Clear();
+        ControlPoints = new List<Vector3>();
     }
     public void ResetToTemplate(Vector3 center)
     {
@@ -163,7 +164,7 @@ public class BezierCubic : MonoBehaviour
     {
         // Intermediate control points
         Vector3 firstTangent = 2 * ControlPoints[CountPoints - 1] - ControlPoints[CountPoints - 2];
-        Vector3 secondTangent = firstTangent + (anchorPos - firstTangent) * 0.5f;
+        Vector3 secondTangent = anchorPos + (ControlPoints[CountPoints - 1] - firstTangent);
 
         // Adding points to list
         ControlPoints.Add(firstTangent);
