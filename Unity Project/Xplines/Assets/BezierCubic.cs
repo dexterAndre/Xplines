@@ -18,15 +18,16 @@ using UnityEngine;
 public class BezierCubic : MonoBehaviour
 {
     #region Class, data
+    private List<Vector3> controlPoints;
     public List<Vector3> ControlPoints
     {
         get
         {
-            return ControlPoints;
+            return controlPoints;
         }
         set
         {
-            ControlPoints = value;
+            controlPoints = value;
 
             // Reset processes such as events, etc. 
             // Reset look-up tables such as RM frames, arc length, etc. 
@@ -43,11 +44,11 @@ public class BezierCubic : MonoBehaviour
     #endregion
 
     #region Utilities
-    private void ResetToEmpty()
+    public void ResetToEmpty()
     {
         ControlPoints.Clear();
     }
-    private void ResetToTemplate(Vector3 center)
+    public void ResetToTemplate(Vector3 center)
     {
         ControlPoints.Clear();
         ControlPoints = new List<Vector3>

@@ -47,8 +47,24 @@ public class BezierCubicInspector : Editor
 
     private void OnEnable()
     {
-        if (curve == null)
-            curve = (BezierCubic)target;
+        curve = (BezierCubic)target;
+        if (curve.CountSegments <= 0)
+        {
+            curve.ResetToTemplate(Vector3.zero);
+        }
+    }
+
+    private void OnSceneGUI()
+    {
+        // Displaying
+        if (curve.CountSegments > 0)
+        {
+            for (int i = 0; i < curve.CountSegments; i++)
+            {
+                List<Vector3> p = curve.SegmentPoints(i);
+                Handles.DrawBezier(p[0], p[3], p[1], p[2], Color.magenta, null, 2f);
+            }
+        }
     }
 
     public override void OnInspectorGUI()
@@ -180,15 +196,7 @@ public class BezierCubicInspector : Editor
                     addModeDistance = 10f;
 
                 Debug.Log(addModeDistance);
-
             }
-        }
-
-        // Displaying
-        for (int i = 0; i < curve.CountSegments; i++)
-        {
-            List<Vector3> p = curve.SegmentPoints(i);
-            Handles.DrawBezier(p[0], p[1], p[2], p[3], Color.magenta, null, 2f);
         }
     }
 }
