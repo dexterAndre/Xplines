@@ -9,18 +9,28 @@ using UnityEngine;
     - CatlikeCoding: Curves and Splines https://catlikecoding.com/unity/tutorials/curves-and-splines/
     - Continuity types: https://www.sharcnet.ca/Software/Gambit/html/faq/geometry_check.htm 
     - More on continuity: http://graphics.stanford.edu/courses/cs348a-17-winter/ReaderNotes/handout27.pdf 
+    - Continuity guide: https://www.algosome.com/articles/continuous-bezier-curve-line.html 
+    - Even more on cintunuity: http://www.cs.uky.edu/~cheng/cs535/Notes/CS535-Curves-1.pdf
 */
 
 [System.Serializable]
 [RequireComponent(typeof(LineRenderer))]
 public class BezierCubic : MonoBehaviour
 {
-    #region Class; data
-    private List<Vector3> controlPoints;
+    #region Class, data
     public List<Vector3> ControlPoints
     {
-        get { return controlPoints; }
-        set { controlPoints = value; }
+        get
+        {
+            return ControlPoints;
+        }
+        set
+        {
+            ControlPoints = value;
+
+            // Reset processes such as events, etc. 
+            // Reset look-up tables such as RM frames, arc length, etc. 
+        }
     }
     public BezierCubic(Vector3 center)
     {
@@ -52,7 +62,7 @@ public class BezierCubic : MonoBehaviour
     /// Returns the control points of the given segment index. 
     /// </summary>
     /// <param name="i">Segment index. </param>
-    private List<Vector3> SegmentPoints(int i)
+    public List<Vector3> SegmentPoints(int i)
     {
         return new List<Vector3>
         {
@@ -66,14 +76,14 @@ public class BezierCubic : MonoBehaviour
     /// Counts the amount of control points. 
     /// Includes both anchor points and tangent handles. 
     /// </summary>
-    private int CountPoints
+    public int CountPoints
     {
         get { return ControlPoints.Count; }
     }
     /// <summary>
     /// Counts the amount of Bézier curve segments. 
     /// </summary>
-    private int CountSegments
+    public int CountSegments
     {
         get { return (ControlPoints.Count - 4) / 3 + 1; }
     }
@@ -82,7 +92,7 @@ public class BezierCubic : MonoBehaviour
     /// True if anchor point. False if tangent handle. 
     /// </summary>
     /// <param name="i">Control point index. </param>
-    private bool IsAnchor(int i)
+    public bool IsAnchor(int i)
     {
         return i % 3 == 0 ? true : false;
     }
@@ -150,7 +160,14 @@ public class BezierCubic : MonoBehaviour
     /// <param name="anchorPos">Position of new anchor point. </param>
     public void AddSegment(Vector3 anchorPos)
     {
+        // Intermediate control points
+        Vector3 firstTangent = 2 * ControlPoints[CountPoints - 1] - ControlPoints[CountPoints - 2];
+        Vector3 secondTangent = firstTangent + (anchorPos - firstTangent) * 0.5f;
 
+        // Adding points to list
+        ControlPoints.Add(firstTangent);
+        ControlPoints.Add(secondTangent);
+        ControlPoints.Add(anchorPos);
     }
     /// <summary>
     /// Appends a Bézier segment after last segment. 
