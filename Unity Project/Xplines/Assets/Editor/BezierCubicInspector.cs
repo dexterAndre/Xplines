@@ -56,6 +56,114 @@ public class BezierCubicInspector : Editor
 
     private void OnSceneGUI()
     {
+        ProcessInput();
+        DrawScene();
+    }
+
+    private void ProcessInput()
+    {
+        // Editing
+        Event e = Event.current;
+        Vector3 mousePos = HandleUtility.GUIPointToWorldRay(e.mousePosition).origin;
+        
+        // If modifying curve
+        if (e.shift == true)
+        {
+            // Sets OnMouseButtonDown click position
+            if (e.type == EventType.MouseDown && e.button == 0)
+            {
+                clickPos = Input.mousePosition;
+                Debug.Log("Shift left-click");
+            }
+            // Drag to register delta away from clickPos
+            if (e.type == EventType.MouseDrag && e.button == 0)
+            {
+                dragDelta = (Vector2)Input.mousePosition - clickPos;
+                Debug.Log("Shift left-drag");
+            }
+            // If releasing left-click without moving mouse
+            if (e.type == EventType.MouseUp && e.button == 0)
+            {
+                // If releasing left-click without moving mouse
+                if (dragDelta.sqrMagnitude <= 0.01f)
+                {
+                    switch (addMode)
+                    {
+                        case AddMode.Collinear:
+                        {
+                            break;
+                        }
+                        case AddMode.CameraForward:
+                        {
+                            Vector3 camPoint
+                                = Camera.main.transform.position
+                                + Camera.main.transform.forward
+                                * addModeDistance;
+
+                            curve.AddSegment(camPoint);
+                            break;
+                        }
+                        case AddMode.XZ_Plane:
+                        {
+                            Camera cam = Camera.main;
+                            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+                            Vector3 dir = ray.direction;
+
+                            // Handling cases that will never hit he xz-plane
+                            if (cam.transform.position.y > 0f && dir.y >= 0f)
+                            {
+                                // Failed to hit xz-plane
+                                break;
+                            }
+                            else if (cam.transform.position.y < 0f && dir.y <= 0f)
+                            {
+                                // Failed to hit xz-plane
+                                break;
+                            }
+
+                            Vector3 pos = ray.origin;
+                            float t = -pos.y / dir.y;
+
+                            Vector3 xzPoint = pos + t * dir;
+
+                            curve.AddSegment(xzPoint);
+                            break;
+                        }
+                        case AddMode.Tangent:
+                        {
+                            break;
+                        }
+                    }
+                }
+                // Else if releasing left-click after dragging
+                else
+                {
+
+                }
+
+                Debug.Log("Shift left-release");
+
+                clickPos = Vector2.negativeInfinity;
+                dragDelta = Vector2.negativeInfinity;
+            }
+            // If scrolling
+            if (e.isScrollWheel)
+            {
+                // Shift-scroll to adjust addModeCameraForwardDistance
+                addModeDistance -= (float)e.delta.y / 10f;
+                if (addModeDistance < 0f)
+                    addModeDistance = 0f;
+                // Incomplete - use settings to determing min / max addModeCameraForwardDistance!
+                else if (addModeDistance > 10f)
+                    addModeDistance = 10f;
+
+                Debug.Log(addModeDistance);
+            }
+        }
+    }
+
+    private void DrawScene()
+    {
         // Displaying
         if (curve.CountSegments > 0)
         {
@@ -96,107 +204,6 @@ public class BezierCubicInspector : Editor
         if (GUILayout.Button("Reset Curve"))
         {
             Debug.Log("Clicked Reset Curve!");
-        }
-
-        // Editing
-        Event e = Event.current;
-        // ...
-        if (e.shift)
-        {
-            // If clicking
-            if (e.isMouse)
-            {
-                // Shift-click to add anchor (and auto tangent)
-
-                // Sets OnMouseButtonDown click position
-                if (Input.GetMouseButtonDown(0))
-                {
-                    clickPos = Input.mousePosition;
-                }
-                // Drag to register delta away from clickPos
-                if (Input.GetMouseButton(0))
-                {
-                    dragDelta = (Vector2)Input.mousePosition - clickPos;
-                }
-                // If releasing left-click without moving mouse
-                if (Input.GetMouseButtonUp(0))
-                {
-                    // If releasing left-click without moving mouse
-                    if (dragDelta.sqrMagnitude == 0f)
-                    {
-                        switch (addMode)
-                        {
-                            case AddMode.Collinear:
-                            {
-                                break;
-                            }
-                            case AddMode.CameraForward:
-                            {
-                                Vector3 camPoint
-                                    = Camera.main.transform.position
-                                    + Camera.main.transform.forward
-                                    * addModeDistance;
-
-                                curve.AddSegment(camPoint);
-                                break;
-                            }
-                            case AddMode.XZ_Plane:
-                            {
-                                Camera cam = Camera.main;
-                                Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-                                Vector3 dir = ray.direction;
-
-                                // Handling cases that will never hit he xz-plane
-                                if (cam.transform.position.y > 0f && dir.y >= 0f)
-                                {
-                                    // Failed to hit xz-plane
-                                    break;
-                                }
-                                else if (cam.transform.position.y < 0f && dir.y <= 0f)
-                                {
-                                    // Failed to hit xz-plane
-                                    break;
-                                }
-
-                                Vector3 pos = ray.origin;
-                                float t = -pos.y / dir.y;
-
-                                Vector3 xzPoint = pos + t * dir;
-
-                                curve.AddSegment(xzPoint);
-                                break;
-                            }
-                            case AddMode.Tangent:
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    // Else if releasing left-click after dragging
-                    else
-                    {
-
-                    }
-
-                    clickPos = Vector2.negativeInfinity;
-                    dragDelta = Vector2.negativeInfinity;
-                }
-
-                // Shift-click-drag to add anchor and then last tangent (first tangent is auto)
-            }
-            // If scrolling
-            if (e.isScrollWheel)
-            {
-                // Shift-scroll to adjust addModeCameraForwardDistance
-                addModeDistance -= (float)e.delta.y / 10f;
-                if (addModeDistance < 0f)
-                    addModeDistance = 0f;
-                // Incomplete - use settings to determing min / max addModeCameraForwardDistance!
-                else if (addModeDistance > 10f)
-                    addModeDistance = 10f;
-
-                Debug.Log(addModeDistance);
-            }
         }
     }
 }
