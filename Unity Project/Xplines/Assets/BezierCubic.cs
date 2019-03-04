@@ -2,22 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+/*
+    Resources: 
+    - Sebastian Lague: [Unity] Curve Editor https://youtu.be/RF04Fi9OCPc 
+    - Pomax: A Primer on Bézier Curves https://pomax.github.io/bezierinfo/ 
+    - CatlikeCoding: Curves and Splines https://catlikecoding.com/unity/tutorials/curves-and-splines/
+    - Continuity types: https://www.sharcnet.ca/Software/Gambit/html/faq/geometry_check.htm 
+    - More on continuity: http://graphics.stanford.edu/courses/cs348a-17-winter/ReaderNotes/handout27.pdf 
+*/
 
 [System.Serializable]
 [RequireComponent(typeof(LineRenderer))]
-public class BezierCurve : MonoBehaviour
+public class BezierCubic : MonoBehaviour
 {
-    #region Class, data
+    #region Class; data
     private List<Vector3> controlPoints;
     public List<Vector3> ControlPoints
     {
         get { return controlPoints; }
         set { controlPoints = value; }
     }
-    public BezierCurve(Vector3 center)
+    public BezierCubic(Vector3 center)
     {
-        GenerateDefaultCurve(center);
+        ResetToTemplate(center);
     }
     public Vector3 this[int i]
     {
@@ -26,7 +33,11 @@ public class BezierCurve : MonoBehaviour
     #endregion
 
     #region Utilities
-    private void GenerateDefaultCurve(Vector3 center)
+    private void ResetToEmpty()
+    {
+        ControlPoints.Clear();
+    }
+    private void ResetToTemplate(Vector3 center)
     {
         ControlPoints.Clear();
         ControlPoints = new List<Vector3>
@@ -37,6 +48,10 @@ public class BezierCurve : MonoBehaviour
             center + Vector3.right
         };
     }
+    /// <summary>
+    /// Returns the control points of the given segment index. 
+    /// </summary>
+    /// <param name="i">Segment index. </param>
     private List<Vector3> SegmentPoints(int i)
     {
         return new List<Vector3>
@@ -47,13 +62,29 @@ public class BezierCurve : MonoBehaviour
             this[i * 3 + 3]
         };
     }
+    /// <summary>
+    /// Counts the amount of control points. 
+    /// Includes both anchor points and tangent handles. 
+    /// </summary>
+    private int CountPoints
+    {
+        get { return ControlPoints.Count; }
+    }
+    /// <summary>
+    /// Counts the amount of Bézier curve segments. 
+    /// </summary>
     private int CountSegments
     {
         get { return (ControlPoints.Count - 4) / 3 + 1; }
     }
-    private int CountPoints
+    /// <summary>
+    /// Tests if the control point index yields an anchor point. 
+    /// True if anchor point. False if tangent handle. 
+    /// </summary>
+    /// <param name="i">Control point index. </param>
+    private bool IsAnchor(int i)
     {
-        get { return ControlPoints.Count; }
+        return i % 3 == 0 ? true : false;
     }
     #endregion
 
@@ -104,9 +135,45 @@ public class BezierCurve : MonoBehaviour
         Vector3 r = Vector3.Cross(b, a);
         return Vector3.Cross(r, a);
     }
+    public Vector3 NormalRotatonalMinimizing(int segment, float t)
+    {
+        // Incomplete
+        return Vector3.negativeInfinity;
+    }
     #endregion
 
     #region Editing
+    /// <summary>
+    /// Appends a Bézier segment after last segment. 
+    /// Automatically calculates intermediate tangents. 
+    /// </summary>
+    /// <param name="anchorPos">Position of new anchor point. </param>
+    public void AddSegment(Vector3 anchorPos)
+    {
+
+    }
+    /// <summary>
+    /// Appends a Bézier segment after last segment. 
+    /// Automatically calculates first tangent, but uses tangentPos for the last tangent handle. 
+    /// </summary>
+    /// <param name="anchorPos">Position of new anchor point. </param>
+    /// <param name="tangentPos">Position of last tangent handle. </param>
+    public void AddSegment(Vector3 anchorPos, Vector3 tangentPos)
+    {
+
+    }
+    /// <summary>
+    /// Translates an anchor point. Also translates its corresponding tangents without breaking continuity. 
+    /// </summary>
+    /// <param name="i">Control point index. </param>
+    /// <param name="pos">New position. </param>
+    public void TranslatePoint(int i, Vector3 pos)
+    {
+        // Incomplete
+        ControlPoints[i] = pos;
+
+        // Also translate tangents
+    }
     #endregion
 
     #region Editor settings

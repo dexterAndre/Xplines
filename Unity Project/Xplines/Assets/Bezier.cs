@@ -176,21 +176,9 @@ public class Bezier : MonoBehaviour
     #endregion
 
     #region Analysis
-    // Bitangent
-    // Curvature
-    // Arc length
-    // Curve fitting
-    // Computational complexity
-    // Inflection points
-    // Extrema? 
     // Real-time inspector editing
     // Inspector unit interval Bézier
     // Bézier to function
-    #endregion
-
-    #region Events
-    // Event point
-    // Event interval
     #endregion
 
     #region Utilities
