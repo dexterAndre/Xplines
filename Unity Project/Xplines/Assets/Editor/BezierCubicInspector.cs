@@ -59,7 +59,7 @@ public class BezierCubicInspector : Editor
     private void OnEnable()
     {
         curve = (BezierCubic)target;
-        if (curve.CountSegments <= 0)
+        if (curve.ControlPoints == null)
         {
             curve.ResetToTemplate(Vector3.zero);
         }
@@ -116,8 +116,9 @@ public class BezierCubicInspector : Editor
                         else
                             cam = Camera.main;
 
-                        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+                        Ray ray = HandleUtility.GUIPointToWorldRay(new Vector3(e.mousePosition.x, e.mousePosition.y));
                         Vector3 dir = ray.direction;
+
 
                         // Handling cases that will never hit he xz-plane
                         if (cam.transform.position.y > 0f && dir.y >= 0f)
@@ -164,49 +165,52 @@ public class BezierCubicInspector : Editor
     private void DrawScene()
     {
         // Displaying curve
-        for (int i = 0; i < curve.CountSegments; i++)
+        if (curve.ControlPoints != null)
         {
-            List<Vector3> p = curve.SegmentPoints(i);
-            Handles.DrawBezier(p[0], p[3], p[1], p[2], s_curveColor, null, s_curveWidth);
-        }
-
-        // Displaying anchor points
-        for (int i = 0; i < curve.CountPoints; i++)
-        {
-            // Check if this point is anchor
-            if (curve.IsAnchor(i))
+            for (int i = 0; i < curve.CountSegments; i++)
             {
-                Handles.color = s_pointColorAnchor;
+                List<Vector3> p = curve.SegmentPoints(i);
+                Handles.DrawBezier(p[0], p[3], p[1], p[2], s_curveColor, null, s_curveWidth);
             }
-            // Else it is a tangent handle
-            else
+
+            // Displaying anchor points
+            for (int i = 0; i < curve.CountPoints; i++)
             {
-                // Draw tangent lines
-                //      Out-tangent
-                if (curve.IsAnchor(i - 1))
+                // Check if this point is anchor
+                if (curve.IsAnchor(i))
                 {
-                    Handles.DrawLine(curve[i - 1], curve[i]);
+                    Handles.color = s_pointColorAnchor;
                 }
-                //      In-tangent
+                // Else it is a tangent handle
                 else
                 {
-                    Handles.DrawLine(curve[i + 1], curve[i]);
+                    // Draw tangent lines
+                    //      Out-tangent
+                    if (curve.IsAnchor(i - 1))
+                    {
+                        Handles.DrawLine(curve[i - 1], curve[i]);
+                    }
+                    //      In-tangent
+                    else
+                    {
+                        Handles.DrawLine(curve[i + 1], curve[i]);
+                    }
+
+                    Handles.color = s_pointColorHandle;
                 }
 
-                Handles.color = s_pointColorHandle;
-            }
+                // Selected point is special (overrides previously selected color)
+                if (selectedPoint == i)
+                {
+                    Handles.color = s_pointColorSelected;
+                }
 
-            // Selected point is special (overrides previously selected color)
-            if (selectedPoint == i)
-            {
-                Handles.color = s_pointColorSelected;
-            }
-
-            Vector3 pos = Handles.FreeMoveHandle(curve[i], Quaternion.identity, s_pointRadius, Vector3.zero, Handles.SphereHandleCap);
-            if (curve[i] != pos)
-            {
-                Undo.RecordObject(curve, "Translate Point");
-                curve.TranslatePoint(i, pos);
+                Vector3 pos = Handles.FreeMoveHandle(curve[i], Quaternion.identity, s_pointRadius, Vector3.zero, Handles.SphereHandleCap);
+                if (curve[i] != pos)
+                {
+                    Undo.RecordObject(curve, "Translate Point");
+                    curve.TranslatePoint(i, pos);
+                }
             }
         }
     }
@@ -240,6 +244,7 @@ public class BezierCubicInspector : Editor
         if (GUILayout.Button("Reset Curve"))
         {
             curve.ResetToTemplate(Vector3.zero);
+
             SceneView.RepaintAll();
             Debug.Log("Clicked Reset Curve!");
         }

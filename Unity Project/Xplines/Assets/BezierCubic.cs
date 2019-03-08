@@ -14,11 +14,11 @@ using UnityEngine;
 */
 
 [System.Serializable]
-[RequireComponent(typeof(LineRenderer))]
+//[RequireComponent(typeof(LineRenderer))]
 public class BezierCubic : MonoBehaviour
 {
     #region Class, data
-    private List<Vector3> controlPoints;
+    private List<Vector3> controlPoints = new List<Vector3>();
     public List<Vector3> ControlPoints
     {
         get
@@ -42,7 +42,7 @@ public class BezierCubic : MonoBehaviour
     #region Utilities
     public Vector3 this[int i]
     {
-        get { return ControlPoints[i]; }
+        get { return (Vector3)(transform.localToWorldMatrix * ControlPoints[i]) + transform.position; }
     }
     public void ResetToEmpty()
     {
@@ -51,7 +51,11 @@ public class BezierCubic : MonoBehaviour
     }
     public void ResetToTemplate(Vector3 center)
     {
-        ControlPoints.Clear();
+        if (ControlPoints == null)
+            ControlPoints = new List<Vector3>();
+        else
+            ControlPoints.Clear();
+
         ControlPoints = new List<Vector3>
         {
             center + Vector3.left,
@@ -61,10 +65,24 @@ public class BezierCubic : MonoBehaviour
         };
     }
     /// <summary>
-    /// Returns the control points of the given segment index. 
+    /// Returns the control points of the given segment index. Local space. 
     /// </summary>
     /// <param name="i">Segment index. </param>
-    public List<Vector3> SegmentPoints(int i)
+    public List<Vector3> SegmentPointsLocalSpace(int i)
+    {
+        return new List<Vector3>
+        {
+            controlPoints[i * 3],
+            controlPoints[i * 3 + 1],
+            controlPoints[i * 3 + 2],
+            controlPoints[i * 3 + 3]
+        };
+    }
+    /// <summary>
+    /// Returns the control points of the given segment index. World space. 
+    /// </summary>
+    /// <param name="i">Segment index. </param>
+    public List<Vector3> SegmentPointsWorldSpace(int i)
     {
         return new List<Vector3>
         {
@@ -103,7 +121,7 @@ public class BezierCubic : MonoBehaviour
     #region Analysis
     public Vector3 Evaluate(int segment, float t)
     {
-        List<Vector3> p = SegmentPoints(segment);
+        List<Vector3> p = SegmentPointsLocalSpace(segment);
         t = Mathf.Clamp01(t);
         float omt = 1f - t;
 
@@ -115,7 +133,7 @@ public class BezierCubic : MonoBehaviour
     }
     public Vector3 Derivative(int segment, float t)
     {
-        List<Vector3> p = SegmentPoints(segment);
+        List<Vector3> p = SegmentPointsLocalSpace(segment);
         t = Mathf.Clamp01(t);
         float omt = 1f - t;
 
@@ -126,7 +144,7 @@ public class BezierCubic : MonoBehaviour
     }
     public Vector3 Derivative2(int segment, float t)
     {
-        List<Vector3> p = SegmentPoints(segment);
+        List<Vector3> p = SegmentPointsLocalSpace(segment);
         t = Mathf.Clamp01(t);
         float omt = 1f - t;
         float om2t = 1f - 2 * t;
