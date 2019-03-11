@@ -176,7 +176,7 @@ public class BezierCubicInspector : Editor
         {
             for (int i = 0; i < curve.CountSegments; i++)
             {
-                List<Vector3> p = curve.SegmentPointsLocalSpace(i);
+                List<Vector3> p = curve.SegmentPointsWorldSpace(i);
                 Handles.DrawBezier(
                     p[0],
                     p[3],
