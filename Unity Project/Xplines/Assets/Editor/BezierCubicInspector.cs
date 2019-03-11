@@ -30,6 +30,56 @@ public class BezierCubicInspector : Editor
     /// E.g. x along tangent, x in front of camera, etc. 
     /// </summary>
     private float addModeDistance = 5f;
+    public enum IterationMode
+    {
+        Linear,
+        Curvature
+    };
+    private LineRenderer lineRenderer;
+    public void UpdateLineRenderer(IterationMode mode, int resolution)
+    {
+        List<Vector3> tempPoints = new List<Vector3>();
+
+        switch (mode)
+        {
+            case IterationMode.Linear:
+            {
+                for (int i = 0; i < curve.CountSegments; i++)
+                {
+                    for (float p = 0f; p < 1f; p += 1.0f / resolution)
+                    {
+                        tempPoints.Add(curve.Evaluate(i, p));
+                    }
+
+                    // Manually adding last position due to floating point inaccuracies
+                    if (i >= curve.CountSegments - 1)
+                    {
+                        tempPoints.Add(curve.Evaluate(i, 1.0f));
+                    }
+                }
+
+                break;
+            }
+            case IterationMode.Curvature:
+            {
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+
+        lineRenderer.positionCount = tempPoints.Count;
+        lineRenderer.SetPositions(tempPoints.ToArray());
+        lineRenderer.startWidth = curve.s_displayWidthCurve;
+        lineRenderer.endWidth = curve.s_displayWidthCurve;
+        if (lineRenderer.material == null)
+        {
+            var tempMat = Resources.Load("/Materials/XplinesLineRenderer", typeof(Material)) as Material;
+            lineRenderer.sharedMaterial = tempMat;
+        }
+    }
 
     //private float s_curveWidth = 5f;
     //private Color s_curveColor = Color.magenta;
@@ -63,6 +113,7 @@ public class BezierCubicInspector : Editor
 
     private void Awake()
     {
+        // Initializing
         curve = (BezierCubic)target;
         if (curve.ControlPoints == null)
         {
@@ -74,10 +125,21 @@ public class BezierCubicInspector : Editor
         SetDefaultColors();
     }
 
+    private void OnEnable()
+    {
+        // Getting references
+        lineRenderer = curve.GetComponent<LineRenderer>();
+    }
+
     private void OnSceneGUI()
     {
         ProcessInput();
         DrawScene();
+
+        if (GUI.changed == true)
+        {
+            UpdateLineRenderer(IterationMode.Linear, curve.s_curveResolution);
+        }
     }
 
     private void ProcessInput()
@@ -147,6 +209,10 @@ public class BezierCubicInspector : Editor
                         Vector3 xzPoint = pos + t * dir;
 
                         curve.AddSegment(xzPoint);
+
+                        // Updating lineRenderer
+                        UpdateLineRenderer(IterationMode.Linear, curve.s_curveResolution);
+
                         break;
                     }
                     case AddMode.Tangent:
@@ -186,7 +252,7 @@ public class BezierCubicInspector : Editor
                     p[2],
                     curve.s_colorCurveDefault,
                     null,
-                    curve.s_displayWidthFixed == true ? curve.s_displayWidthUniform : curve.s_displayWidthCurve);
+                    (curve.s_displayWidthFixed == true ? curve.s_displayWidthUniform : curve.s_displayWidthCurve) * 100);
             }
 
             // Displaying anchor points
@@ -234,6 +300,12 @@ public class BezierCubicInspector : Editor
     public override void OnInspectorGUI()
     {
         //base.OnInspectorGUI();
+        if (GUI.changed)
+        {
+            // Update lineRenderer
+            UpdateLineRenderer(IterationMode.Linear, curve.s_curveResolution);
+        }
+
         if (curve == null)
             curve = (BezierCubic)target;
         SetToggleButtonStyles();
@@ -267,6 +339,10 @@ public class BezierCubicInspector : Editor
             expandDisplaySettingsMetric = EditorGUILayout.Foldout(expandDisplaySettingsMetric, "Display Metrics");
             if (expandDisplaySettingsMetric == true)
             {
+                EditorGUILayout.LabelField("Display resolution");
+                EditorGUI.BeginChangeCheck();
+                curve.s_curveResolution = EditorGUILayout.IntSlider("Curve Resolution", curve.s_curveResolution, 1, 100);
+                EditorGUI.EndChangeCheck();
                 EditorGUILayout.LabelField("Control Point Radii");
                 curve.s_handlePointRadiusFixed = EditorGUILayout.Toggle("Enforce Uniform Radii", curve.s_handlePointRadiusFixed);
                 curve.s_handlePointUniformRadius = EditorGUILayout.FloatField("Uniform Radius", curve.s_handlePointUniformRadius);
@@ -336,6 +412,12 @@ public class BezierCubicInspector : Editor
             }
 
             EditorGUI.indentLevel--;
+
+            // Checking for changes
+            if (GUI.changed == true)
+            {
+                UpdateLineRenderer(IterationMode.Linear, curve.s_curveResolution);
+            }
         }
         #endregion
 
@@ -352,6 +434,8 @@ public class BezierCubicInspector : Editor
 
     private void SetDefaultDisplayMetrics()
     {
+        curve.s_curveResolution = 100;
+
         curve.s_handlePointRadiusFixed = false;
         curve.s_handlePointUniformRadius = 0.25f;
         curve.s_handlePointAnchorRadius = 0.25f;
@@ -359,11 +443,11 @@ public class BezierCubicInspector : Editor
         curve.s_handlePointHandleRadius = 0.25f;
 
         curve.s_displayWidthFixed = false;
-        curve.s_displayWidthUniform = 5f;
-        curve.s_displayWidthCurve = 5f;
-        curve.s_displayWidthTangent = 5f;
-        curve.s_displayWidthNormal = 5f;
-        curve.s_displayWidthBitangent = 5f;
+        curve.s_displayWidthUniform = 0.1f;
+        curve.s_displayWidthCurve = 0.1f;
+        curve.s_displayWidthTangent = 0.05f;
+        curve.s_displayWidthNormal = 0.05f;
+        curve.s_displayWidthBitangent = 0.05f;
 
         curve.s_displayLengthFixed = false;
         curve.s_displayLengthUniform = 1f;

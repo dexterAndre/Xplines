@@ -41,10 +41,6 @@ public class BezierCubic : MonoBehaviour
     #endregion
 
     #region MonoBehaviour
-    private void SettingsSetColorsTemplate()
-    {
-        s_colorCurveDefault = new Color(235 / 255f, 235 / 255f, 235 / 255f, 1);
-    }
     #endregion
 
     #region Utilities
@@ -219,6 +215,7 @@ public class BezierCubic : MonoBehaviour
 
         // Also translate tangents
     }
+
     #endregion
 
     #region Editor settings
@@ -298,6 +295,8 @@ public class BezierCubic : MonoBehaviour
     public Color s_colorControlHull = new Color(55 / 255f, 55 / 255f, 55 / 255f, 0.1f);
     [Space(5)]
     [Header("Styling: Display Metrics")]
+    [SerializeField, Tooltip("Segment resolution for LineRenderer. ")]
+    public int s_curveResolution = 100;
     [SerializeField, Tooltip("Enforce uniform spherical handle radius?")]
     public bool s_handlePointRadiusFixed = false;
     [SerializeField, Tooltip("Uniform control point radius. ")]
@@ -312,15 +311,15 @@ public class BezierCubic : MonoBehaviour
     [SerializeField, Tooltip("Enforce uniform width on curves? ")]
     public bool s_displayWidthFixed = false;
     [SerializeField, Tooltip("Uniform width of displayed curves, tangents, normals, and bitangents. ")]
-    public float s_displayWidthUniform = 5f;
+    public float s_displayWidthUniform = 0.1f;
     [SerializeField, Tooltip("Width of displayed curve. ")]
-    public float s_displayWidthCurve = 5f;
+    public float s_displayWidthCurve = 0.1f;
     [SerializeField, Tooltip("Width of displayed tangents. ")]
-    public float s_displayWidthTangent = 5f;
+    public float s_displayWidthTangent = 0.05f;
     [SerializeField, Tooltip("Width of displayed normals. ")]
-    public float s_displayWidthNormal = 5f;
+    public float s_displayWidthNormal = 0.05f;
     [SerializeField, Tooltip("Width of displayed bitangents. ")]
-    public float s_displayWidthBitangent = 5f;
+    public float s_displayWidthBitangent = 0.05f;
     [Space(5)]
     [SerializeField, Tooltip("Displays tangents and normals with fixed values (set below). ")]
     public bool s_displayLengthFixed = false;
