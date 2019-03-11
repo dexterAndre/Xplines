@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+
+// https://docs.unity3d.com/ScriptReference/Editor.html ?
 [CustomEditor(typeof(BezierCubic))]
 public class BezierCubicInspector : Editor
 {
@@ -59,7 +61,7 @@ public class BezierCubicInspector : Editor
         }
     }
 
-    private void OnEnable()
+    private void Awake()
     {
         curve = (BezierCubic)target;
         if (curve.ControlPoints == null)
@@ -193,7 +195,7 @@ public class BezierCubicInspector : Editor
                 // Check if this point is anchor
                 if (curve.IsAnchor(i))
                 {
-                    Handles.color = s_pointColorAnchor;
+                    Handles.color = curve.s_colorPointAnchorDefault;
                 }
                 // Else it is a tangent handle
                 else
@@ -210,13 +212,13 @@ public class BezierCubicInspector : Editor
                         Handles.DrawLine(curve[i + 1], curve[i]);
                     }
 
-                    Handles.color = s_pointColorHandle;
+                    Handles.color = curve.s_colorPointHandleDefault;
                 }
 
                 // Selected point is special (overrides previously selected color)
                 if (selectedPoint == i)
                 {
-                    Handles.color = s_pointColorSelected;
+                    Handles.color = curve.s_colorPointAnchorHover;
                 }
 
                 Vector3 pos = Handles.FreeMoveHandle(curve[i], Quaternion.identity, s_pointRadius, Vector3.zero, Handles.SphereHandleCap);
@@ -394,15 +396,15 @@ public class BezierCubicInspector : Editor
         curve.s_colorBitangentClick = new Color(15 / 255f, 15 / 255f, 255 / 255f, 1);
         curve.s_colorBitangentDisabled = new Color(155 / 255f, 155 / 255f, 175 / 255f, 1);
 
-        curve.s_colorPointAnchorDefault = new Color(195 / 255f, 55 / 255f, 55 / 255f, 1);
-        curve.s_colorPointAnchorHover = new Color(215 / 255f, 55 / 255f, 55 / 255f, 1);
-        curve.s_colorPointAnchorClick = new Color(175 / 255f, 55 / 255f, 55 / 255f, 1);
-        curve.s_colorPointAnchorDisabled = new Color(175 / 255f, 155 / 255f, 155 / 255f, 1);
+        curve.s_colorPointAnchorDefault = new Color(235 / 255f, 235 / 255f, 235 / 255f, 1);
+        curve.s_colorPointAnchorHover = new Color(255 / 255f, 255 / 255f, 255 / 255f, 1);
+        curve.s_colorPointAnchorClick = new Color(195 / 255f, 195 / 255f, 195 / 255f, 1);
+        curve.s_colorPointAnchorDisabled = new Color(155 / 255f, 155 / 255f, 155 / 255f, 1);
 
         curve.s_colorPointAnchorDiscontinuousDefault = new Color(195 / 255f, 195 / 255f, 195 / 255f, 1);
         curve.s_colorPointAnchorDiscontinuousHover = new Color(215 / 255f, 215 / 255f, 215 / 255f, 1);
-        curve.s_colorPointAnchorDiscontinuousClick = new Color(175 / 255f, 175 / 255f, 175 / 255f, 1);
-        curve.s_colorPointAnchorDiscontinuousDisabled = new Color(155 / 255f, 155 / 255f, 155 / 255f, 1);
+        curve.s_colorPointAnchorDiscontinuousClick = new Color(155 / 255f, 155 / 255f, 155 / 255f, 1);
+        curve.s_colorPointAnchorDiscontinuousDisabled = new Color(115 / 255f, 15 / 255f, 115 / 255f, 1);
 
         curve.s_colorPointHandleDefault = new Color(55 / 255f, 195 / 255f, 55 / 255f, 1);
         curve.s_colorPointHandleHover = new Color(55 / 255f, 215 / 255f, 55 / 255f, 1);

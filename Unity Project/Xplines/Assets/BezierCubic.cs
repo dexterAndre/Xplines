@@ -266,22 +266,22 @@ public class BezierCubic : MonoBehaviour
     public Color s_colorBitangentDisabled = new Color(155 / 255f, 155 / 255f, 175 / 255f, 1);
     [Space(5)]
     [SerializeField, Tooltip("Default anchor point color. ")]
-    public Color s_colorPointAnchorDefault = new Color(195 / 255f, 55 / 255f, 55 / 255f, 1);
+    public Color s_colorPointAnchorDefault = new Color(235 / 255f, 235 / 255f, 235 / 255f, 1);
     [SerializeField, Tooltip("Hover anchor point color. ")]
-    public Color s_colorPointAnchorHover = new Color(215 / 255f, 55 / 255f, 55 / 255f, 1);
+    public Color s_colorPointAnchorHover = new Color(255 / 255f, 255 / 255f, 255 / 255f, 1);
     [SerializeField, Tooltip("Clicked anchor point color. ")]
-    public Color s_colorPointAnchorClick = new Color(175 / 255f, 55 / 255f, 55 / 255f, 1);
+    public Color s_colorPointAnchorClick = new Color(195 / 255f, 195 / 255f, 195 / 255f, 1);
     [SerializeField, Tooltip("Disabled anchor point color. ")]
-    public Color s_colorPointAnchorDisabled = new Color(175 / 255f, 155 / 255f, 155 / 255f, 1);
+    public Color s_colorPointAnchorDisabled = new Color(155 / 255f, 155 / 255f, 155 / 255f, 1);
     [Space(5)]
     [SerializeField, Tooltip("Default discontinuous anchor point color. ")]
     public Color s_colorPointAnchorDiscontinuousDefault = new Color(195 / 255f, 195 / 255f, 195 / 255f, 1);
     [SerializeField, Tooltip("Hover discontinuous anchor point color. ")]
     public Color s_colorPointAnchorDiscontinuousHover = new Color(215 / 255f, 215 / 255f, 215 / 255f, 1);
     [SerializeField, Tooltip("Clicked discontinuous anchor point color. ")]
-    public Color s_colorPointAnchorDiscontinuousClick = new Color(175 / 255f, 175 / 255f, 175 / 255f, 1);
+    public Color s_colorPointAnchorDiscontinuousClick = new Color(155 / 255f, 155 / 255f, 155 / 255f, 1);
     [SerializeField, Tooltip("Disabled discontinuous anchor point color. ")]
-    public Color s_colorPointAnchorDiscontinuousDisabled = new Color(155 / 255f, 155 / 255f, 155 / 255f, 1);
+    public Color s_colorPointAnchorDiscontinuousDisabled = new Color(115 / 255f, 15 / 255f, 115 / 255f, 1);
     [Space(5)]
     [SerializeField, Tooltip("Default handle point color. ")]
     public Color s_colorPointHandleDefault = new Color(55 / 255f, 195 / 255f, 55 / 255f, 1);
