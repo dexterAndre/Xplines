@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 /*
     Resources: 
@@ -36,6 +37,13 @@ public class BezierCubic : MonoBehaviour
     public BezierCubic(Vector3 center)
     {
         ResetToTemplate(center);
+    }
+    #endregion
+
+    #region MonoBehaviour
+    private void SettingsSetColorsTemplate()
+    {
+        s_colorCurveDefault = new Color(235 / 255f, 235 / 255f, 235 / 255f, 1);
     }
     #endregion
 
@@ -214,6 +222,116 @@ public class BezierCubic : MonoBehaviour
     #endregion
 
     #region Editor settings
+    [Header("Constraints")]
+    [SerializeField, Tooltip("Force all tangents to be directionally continuous. ")]
+    public bool s_constraintContinuousDirections;
+    [SerializeField, Tooltip("Force all tangents to be both directionally and magnitudally continuous. ")]
+    public bool s_constraintContinuousTangents;
+    [Header("Styling")]
+    [Header("Styling: Colors")]
+    [SerializeField, Tooltip("Default curve color. ")]
+    public Color s_colorCurveDefault = new Color(235 / 255f, 235 / 255f, 235 / 255f, 1);
+    [SerializeField, Tooltip("Hover curve color. ")]
+    public Color s_colorCurveHover = new Color(255 / 255f, 255 / 255f, 255 / 255f, 1);
+    [SerializeField, Tooltip("Clicked curve color. ")]
+    public Color s_colorCurveClick = new Color(195 / 255f, 195 / 255f, 195 / 255f, 1);
+    [SerializeField, Tooltip("Disabled curve color. ")]
+    public Color s_colorCurveDisabled = new Color(155 / 255f, 155 / 255f, 155 / 255f, 1);
+    [Space(5)]
+    [SerializeField, Tooltip("Default tangent color. ")]
+    public Color s_colorTangentDefault = new Color(255 / 255f, 55 / 255f, 55 / 255f, 1);
+    [SerializeField, Tooltip("Hover tangent color. ")]
+    public Color s_colorTangentHover = new Color(255 / 255f, 75 / 255f, 75 / 255f, 1);
+    [SerializeField, Tooltip("Clicked tangent color. ")]
+    public Color s_colorTangentClick = new Color(255 / 255f, 15 / 255f, 15 / 255f, 1);
+    [SerializeField, Tooltip("Disabled tangent color. ")]
+    public Color s_colorTangentDisabled = new Color(175 / 255f, 155 / 255f, 155 / 255f, 1);
+    [Space(5)]
+    [SerializeField, Tooltip("Default normal color. ")]
+    public Color s_colorNormalDefault = new Color(55 / 255f, 255 / 255f, 55 / 255f, 1);
+    [SerializeField, Tooltip("Hover normal color. ")]
+    public Color s_colorNormalHover = new Color(75 / 255f, 255 / 255f, 75 / 255f, 1);
+    [SerializeField, Tooltip("Clicked normal color. ")]
+    public Color s_colorNormalClick = new Color(15 / 255f, 255 / 255f, 15 / 255f, 1);
+    [SerializeField, Tooltip("Disabled normal color. ")]
+    public Color s_colorNormalDisabled = new Color(155 / 255f, 175 / 255f, 155 / 255f, 1);
+    [Space(5)]
+    [SerializeField, Tooltip("Default bitangent color. ")]
+    public Color s_colorBitangentDefault = new Color(55 / 255f, 55 / 255f, 255 / 255f, 1);
+    [SerializeField, Tooltip("Hover bitangent color. ")]
+    public Color s_colorBitangentHover = new Color(75 / 255f, 75 / 255f, 255 / 255f, 1);
+    [SerializeField, Tooltip("Clicked bitangent color. ")]
+    public Color s_colorBitangentClick = new Color(15 / 255f, 15 / 255f, 255 / 255f, 1);
+    [SerializeField, Tooltip("Disabled bitangent color. ")]
+    public Color s_colorBitangentDisabled = new Color(155 / 255f, 155 / 255f, 175 / 255f, 1);
+    [Space(5)]
+    [SerializeField, Tooltip("Default anchor point color. ")]
+    public Color s_colorPointAnchorDefault = new Color(195 / 255f, 55 / 255f, 55 / 255f, 1);
+    [SerializeField, Tooltip("Hover anchor point color. ")]
+    public Color s_colorPointAnchorHover = new Color(215 / 255f, 55 / 255f, 55 / 255f, 1);
+    [SerializeField, Tooltip("Clicked anchor point color. ")]
+    public Color s_colorPointAnchorClick = new Color(175 / 255f, 55 / 255f, 55 / 255f, 1);
+    [SerializeField, Tooltip("Disabled anchor point color. ")]
+    public Color s_colorPointAnchorDisabled = new Color(175 / 255f, 155 / 255f, 155 / 255f, 1);
+    [Space(5)]
+    [SerializeField, Tooltip("Default discontinuous anchor point color. ")]
+    public Color s_colorPointAnchorDiscontinuousDefault = new Color(195 / 255f, 195 / 255f, 195 / 255f, 1);
+    [SerializeField, Tooltip("Hover discontinuous anchor point color. ")]
+    public Color s_colorPointAnchorDiscontinuousHover = new Color(215 / 255f, 215 / 255f, 215 / 255f, 1);
+    [SerializeField, Tooltip("Clicked discontinuous anchor point color. ")]
+    public Color s_colorPointAnchorDiscontinuousClick = new Color(175 / 255f, 175 / 255f, 175 / 255f, 1);
+    [SerializeField, Tooltip("Disabled discontinuous anchor point color. ")]
+    public Color s_colorPointAnchorDiscontinuousDisabled = new Color(155 / 255f, 155 / 255f, 155 / 255f, 1);
+    [Space(5)]
+    [SerializeField, Tooltip("Default handle point color. ")]
+    public Color s_colorPointHandleDefault = new Color(55 / 255f, 195 / 255f, 55 / 255f, 1);
+    [SerializeField, Tooltip("Hover handle point color. ")]
+    public Color s_colorPointHandleHover = new Color(55 / 255f, 215 / 255f, 55 / 255f, 1);
+    [SerializeField, Tooltip("Clicked handle point color. ")]
+    public Color s_colorPointHandleClick = new Color(55 / 255f, 175 / 255f, 55 / 255f, 1);
+    [SerializeField, Tooltip("Disabled handle point color. ")]
+    public Color s_colorPointHandleDisabled = new Color(155 / 255f, 175 / 255f, 155 / 255f, 1);
+    [Space(5)]
+    [SerializeField, Tooltip("Control polygon color. ")]
+    public Color s_colorControlPolygon = new Color(55 / 255f, 55 / 255f, 55 / 255f, 1);
+    [SerializeField, Tooltip("Control polygon's convex hull color. ")]
+    public Color s_colorControlHull = new Color(55 / 255f, 55 / 255f, 55 / 255f, 0.1f);
+    [Space(5)]
+    [Header("Styling: Display Metrics")]
+    [SerializeField, Tooltip("Enforce uniform spherical handle radius?")]
+    public bool s_handlePointRadiusFixed = false;
+    [SerializeField, Tooltip("Uniform control point radius. ")]
+    public float s_handlePointUniformRadius = 0.25f;
+    [SerializeField, Tooltip("Radius of anchor point handles. ")]
+    public float s_handlePointAnchorRadius = 0.25f;
+    [SerializeField, Tooltip("Radius of handle point handles. ")]
+    public float s_handlePointHandleRadius = 0.25f;
+    [SerializeField, Tooltip("Radius of discontinuous anchor point handles. ")]
+    public float s_handlePointAnchorDiscontinuousRadius = 0.15f;
+    [Space(10)]
+    [SerializeField, Tooltip("Enforce uniform width on curves? ")]
+    public bool s_displayWidthFixed = false;
+    [SerializeField, Tooltip("Uniform width of displayed curves, tangents, normals, and bitangents. ")]
+    public float s_displayWidthUniform = 5f;
+    [SerializeField, Tooltip("Width of displayed curve. ")]
+    public float s_displayWidthCurve = 5f;
+    [SerializeField, Tooltip("Width of displayed tangents. ")]
+    public float s_displayWidthTangent = 5f;
+    [SerializeField, Tooltip("Width of displayed normals. ")]
+    public float s_displayWidthNormal = 5f;
+    [SerializeField, Tooltip("Width of displayed bitangents. ")]
+    public float s_displayWidthBitangent = 5f;
+    [Space(5)]
+    [SerializeField, Tooltip("Displays tangents and normals with fixed values (set below). ")]
+    public bool s_displayLengthFixed = false;
+    [SerializeField, Tooltip("Uniform length of displayed tangents, normals, and bitangents. ")]
+    public float s_displayLengthUniform = 1f;
+    [SerializeField, Tooltip("Length of displayed tangents (does not affect analytical values). ")]
+    public float s_displayLengthTangent = 1f;
+    [SerializeField, Tooltip("Length of displayed normals (does not affect analytical values). ")]
+    public float s_displayLengthNormal = 1f;
+    [SerializeField, Tooltip("Length of displayed bitangents (does not affect analytical values). ")]
+    public float s_displayLengthBitangent = 1f;
     #endregion
 
     #region Intersection
