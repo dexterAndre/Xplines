@@ -200,6 +200,7 @@ public class BezierCubicInspector : Editor
                 // Else it is a tangent handle
                 else
                 {
+                    Handles.color = curve.s_colorPointHandleDefault;
                     // Draw tangent lines
                     //      Out-tangent
                     if (curve.IsAnchor(i - 1))
@@ -212,7 +213,6 @@ public class BezierCubicInspector : Editor
                         Handles.DrawLine(curve[i + 1], curve[i]);
                     }
 
-                    Handles.color = curve.s_colorPointHandleDefault;
                 }
 
                 // Selected point is special (overrides previously selected color)
