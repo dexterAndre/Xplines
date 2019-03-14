@@ -186,7 +186,7 @@ public class BezierCubic : MonoBehaviour
     {
         // Intermediate control points
         Vector3 firstTangent = 2 * ControlPoints[CountPoints - 1] - ControlPoints[CountPoints - 2];
-        Vector3 secondTangent = anchorPos + (ControlPoints[CountPoints - 1] - firstTangent);
+        Vector3 secondTangent = anchorPos + (firstTangent - anchorPos) * 0.5f;
 
         // Adding points to list
         ControlPoints.Add(firstTangent);

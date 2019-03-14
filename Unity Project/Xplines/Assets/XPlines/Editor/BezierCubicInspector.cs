@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using System;
-using System.Reflection;
 
 
 // https://docs.unity3d.com/ScriptReference/Editor.html ?
@@ -81,7 +79,7 @@ public class BezierCubicInspector : Editor
         lineRenderer.endWidth = curve.s_displayWidthCurve;
         if (lineRenderer.sharedMaterial == null)
         {
-            var tempMat = Resources.Load("/Resources/Materials/XplinesLineRenderer", typeof(Material)) as Material;
+            var tempMat = Resources.Load("Materials/XplinesLineRenderer", typeof(Material)) as Material;
             lineRenderer.sharedMaterial = tempMat;
         }
     }
@@ -310,6 +308,8 @@ public class BezierCubicInspector : Editor
                     Handles.color = curve.s_colorPointAnchorHover;
                 }
 
+                // Ensuring that handles will not draw through depth test
+                Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual;
                 Vector3 pos = Handles.FreeMoveHandle(curve[i], Quaternion.identity, s_pointRadius, Vector3.zero, Handles.SphereHandleCap);
                 if (curve[i] != pos)
                 {
@@ -450,6 +450,7 @@ public class BezierCubicInspector : Editor
         if (GUILayout.Button("Reset Curve"))
         {
             curve.ResetToTemplate(Vector3.zero);
+            UpdateLineRendererDefault();
 
             SceneView.RepaintAll();
             Debug.Log("Clicked Reset Curve!");
