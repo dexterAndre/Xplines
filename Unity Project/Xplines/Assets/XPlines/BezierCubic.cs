@@ -15,10 +15,10 @@ using UnityEditor;
 */
 
 [System.Serializable]
-//[RequireComponent(typeof(LineRenderer))]
 public class BezierCubic : MonoBehaviour
 {
     #region Class, data
+    [SerializeField, HideInInspector]
     private List<Vector3> controlPoints = new List<Vector3>();
     public List<Vector3> ControlPoints
     {
@@ -211,6 +211,7 @@ public class BezierCubic : MonoBehaviour
     public void TranslatePoint(int i, Vector3 pos)
     {
         // Incomplete
+        //Undo.RecordObject(this, "Translate Point");
         ControlPoints[i] = pos;
 
         // Also translate tangents

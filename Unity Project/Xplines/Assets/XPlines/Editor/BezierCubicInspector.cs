@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System;
+using System.Reflection;
 
 
 // https://docs.unity3d.com/ScriptReference/Editor.html ?
@@ -38,6 +40,9 @@ public class BezierCubicInspector : Editor
     private LineRenderer lineRenderer;
     public void UpdateLineRenderer(IterationMode mode, int resolution)
     {
+        if (lineRenderer == null)
+            return;
+
         List<Vector3> tempPoints = new List<Vector3>();
 
         switch (mode)
@@ -74,11 +79,15 @@ public class BezierCubicInspector : Editor
         lineRenderer.SetPositions(tempPoints.ToArray());
         lineRenderer.startWidth = curve.s_displayWidthCurve;
         lineRenderer.endWidth = curve.s_displayWidthCurve;
-        if (lineRenderer.material == null)
+        if (lineRenderer.sharedMaterial == null)
         {
-            var tempMat = Resources.Load("/Materials/XplinesLineRenderer", typeof(Material)) as Material;
+            var tempMat = Resources.Load("/Resources/Materials/XplinesLineRenderer", typeof(Material)) as Material;
             lineRenderer.sharedMaterial = tempMat;
         }
+    }
+    private void UpdateLineRendererDefault()
+    {
+        UpdateLineRenderer(IterationMode.Linear, curve.s_curveResolution);
     }
 
     //private float s_curveWidth = 5f;
@@ -129,6 +138,20 @@ public class BezierCubicInspector : Editor
     {
         // Getting references
         lineRenderer = curve.GetComponent<LineRenderer>();
+        if (lineRenderer == null)
+        {
+            lineRenderer = curve.gameObject.AddComponent<LineRenderer>();
+            Debug.Log("Added LineRenderer");
+        }
+
+        UpdateLineRenderer(IterationMode.Linear, curve.s_curveResolution);
+
+        Undo.undoRedoPerformed += UpdateLineRendererDefault;
+    }
+
+    private void OnDisable()
+    {
+        Undo.undoRedoPerformed -= UpdateLineRendererDefault;
     }
 
     private void OnSceneGUI()
@@ -292,6 +315,7 @@ public class BezierCubicInspector : Editor
                 {
                     Undo.RecordObject(curve, "Translate Point");
                     curve.TranslatePoint(i, pos);
+                    UpdateLineRenderer(IterationMode.Linear, curve.s_curveResolution);
                 }
             }
         }
@@ -429,6 +453,16 @@ public class BezierCubicInspector : Editor
 
             SceneView.RepaintAll();
             Debug.Log("Clicked Reset Curve!");
+        }
+        GUI.backgroundColor = new Color(255 / 255f, 235 / 255f, 235 / 255f, 1.0f);
+        if (GUILayout.Button("Remove Component"))
+        {
+            if (lineRenderer != null)
+                DestroyImmediate(lineRenderer);
+            DestroyImmediate(curve);
+
+            SceneView.RepaintAll();
+            Debug.Log("Clicked Remove Component!");
         }
     }
 
